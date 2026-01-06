@@ -1,12 +1,9 @@
 microsoftteamsnew)
     name="Microsoft Teams (work or school)"
     type="pkg"
-    #packageID="com.microsoft.teams2"
-    downloadURL="https://go.microsoft.com/fwlink/?linkid=2249065"
-    #appNewVersion=$(curl -fsIL "${downloadURL}" | grep -i "^location" | tail -1 | cut -d "/" -f5)
-    # No version in download path, so grab it from homepage
-    appNewVersion=$(curl -fs https://macadmins.software/latest.xml | xpath '//latest/package[id="com.microsoft.teams2.standalone"]/version' 2>/dev/null | sed -E 's/<version>([0-9.]*) .*/\1/')
-    #versionKey="CFBundleGetInfoString"
+    teamsBuilds=$(curl -fs "https://config.teams.microsoft.com/config/v1/MicrosoftTeams/50_1.0.0.0?environment=prod&audienceGroup=general&teamsRing=general&agent=TeamsBuilds")
+    appNewVersion=$(echo "$teamsBuilds" | jq -r '.BuildSettings.WebView2Canary.macOS.latestVersion')
+    downloadURL="https://statics.teams.cdn.office.net/production-osx/$appNewVersion/MicrosoftTeams.pkg"
     expectedTeamID="UBF8T346G9"
     blockingProcesses=( MSTeams "Microsoft Teams" "Microsoft Teams WebView" "Microsoft Teams Launcher" "Microsoft Teams (work preview)")
     # msupdate requires a PPPC profile pushed out from Jamf to work, https://github.com/pbowden-msft/MobileConfigs/tree/master/Jamf-MSUpdate
